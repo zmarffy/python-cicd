@@ -29,9 +29,7 @@ pipeline {
     }
     stages {
         stage('Checkout') {
-            agent {
-                label 'controller'
-            }
+            agent any
             steps {
                 checkout(
                     [
@@ -367,7 +365,6 @@ pipeline {
                                 ) {
                                     sh(
                                         script: releaseScript,
-                                        returnStdout: true,
                                         label: 'Create new release on GitHub'
                                     )
                                 }
