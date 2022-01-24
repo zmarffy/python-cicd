@@ -343,7 +343,7 @@ pipeline {
                             else {
                                 releaseScript = 'gh release create "v$VERSION" --target "$BRANCH"'
                                 if (env.RELEASE_NOTES) {
-                                    releaseScript += ' --notes $RELEASE_NOTES'
+                                    releaseScript += ' --notes "$RELEASE_NOTES"'
                                 }
                                 else {
                                     releaseScript += ' --generate-notes'
