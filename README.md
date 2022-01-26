@@ -8,4 +8,5 @@ Your Python project must use `poetry`. It can optionally use `poethepoet` to def
 
 ## Notes
 
-* This can only build pure Python packages
+* This can only build pure Python packages, as it uses poetry
+* If your project requries extras to build, you can make a `cicd/Dockerfile.build` file in your Python repo with the requirements

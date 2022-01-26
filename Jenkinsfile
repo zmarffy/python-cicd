@@ -93,7 +93,7 @@ pipeline {
                         }
                         PROJECT_INFO = readJSON(
                             text: sh(
-                                script: '''python3 -c 'from toml import load; from json import dumps; print(dumps(load("pyproject.toml")))' ''',
+                                script: '''python -c 'from toml import load; from json import dumps; print(dumps(load("pyproject.toml")))' ''',
                                 label: 'Get project info',
                                 returnStdout: true
                             )
