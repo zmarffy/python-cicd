@@ -1,9 +1,12 @@
+@Library('jenkins-notification-library') _
+
 def dockerFileToUseForBuild = 'Dockerfile.defaultbuild'
 def PROJECT_INFO = [:]
 def HAS_POE = false
 def AVAILABLE_POE_TASKS = []
 def IS_LOCAL_VERSION = false
 def IS_PRERELEASE = false
+env._RECENTLY_USED_NODE = ""
 
 pipeline {
     agent none
@@ -77,6 +80,7 @@ pipeline {
             steps {
                 unstash('source')
                 script {
+                    env._RECENTLY_USED_NODE = env.NODE_NAME
                     def customDockerfileDotBuild = '_project/cicd/Dockerfile.build'
                     if (fileExists(customDockerfileDotBuild)) {
                         dockerFileToUseForBuild = customDockerfileDotBuild
@@ -120,7 +124,7 @@ pipeline {
             agent {
                 dockerfile {
                     filename "${dockerFileToUseForBuild}"
-                    label 'hasdocker'
+                    label "${env._RECENTLY_USED_NODE}"
                 }
             }
             stages {
@@ -377,6 +381,18 @@ pipeline {
                 cleanup {
                     cleanWs()
                 }
+            }
+        }
+    }
+    post {
+        always {
+            sendNotification(
+                ifttt: true
+            )
+        }
+        cleanup {
+            node(env._RECENTLY_USED_NODE) {
+                cleanWs()
             }
         }
     }
