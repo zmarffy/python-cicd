@@ -128,6 +128,42 @@ pipeline {
                 }
             }
             stages {
+                stage('Get version info') {
+                    when {
+                        expression {
+                            params.BUILD
+                        }
+                    }
+                    steps {
+                        script {
+                            dir('_project') {
+                                env.VERSION = (
+                                    sh(
+                                        script: 'poetry-dynamic-versioning 2>&1 && git restore .',
+                                        returnStdout: true,
+                                        label: 'Get version info' 
+                                    ) =~ /^(?:Version: (.+)\n)/
+                                )[0][1]
+                                def out = readJSON(
+                                    text: sh(
+                                        script: 'python ../get_version_info.py',
+                                        returnStdout: true,
+                                        label: 'Parse version components'
+                                    )
+                                )
+                                IS_LOCAL_VERSION = out['local']
+                                IS_PRERELEASE = out['prerelease']
+                                if (IS_LOCAL_VERSION) {
+                                    echo 'This package has a local component to its version'
+                                }
+                                if (IS_PRERELEASE) {
+                                    echo 'This package is a prerelease'
+                                }
+                            }
+                            currentBuild.displayName = "$env.PROJECT_NAME $env.VERSION"
+                        }
+                    }
+                }
                 stage('Install') {
                     steps {
                         dir('_project') {
@@ -254,35 +290,6 @@ pipeline {
                                     onlyIfSuccessful: true
                                 )
                             }
-                        }
-                    }
-                }
-                stage('Get version info') {
-                    when {
-                        expression {
-                            params.BUILD
-                        }
-                    }
-                    steps {
-                        script {
-                            dir('_project') {
-                                def out = readJSON(
-                                    text: sh(
-                                        script: 'python ../get_version_info.py',
-                                        returnStdout: true
-                                    )
-                                )
-                                env.VERSION = out['version']
-                                IS_LOCAL_VERSION = out['local']
-                                IS_PRERELEASE = out['prerelease']
-                                if (IS_LOCAL_VERSION) {
-                                    echo 'This package has a local component to its version'
-                                }
-                                if (IS_PRERELEASE) {
-                                    echo 'This package is a prerelease'
-                                }
-                            }
-                            currentBuild.displayName = "$env.PROJECT_NAME $env.VERSION"
                         }
                     }
                 }
