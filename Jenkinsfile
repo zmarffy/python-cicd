@@ -147,7 +147,7 @@ pipeline {
                                 def out = readJSON(
                                     text: sh(
                                         script: 'python ../get_version_info.py',
-                                        returnStdout: true
+                                        returnStdout: true,
                                         label: 'Parse version components'
                                     )
                                 )
