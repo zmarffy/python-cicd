@@ -139,7 +139,7 @@ pipeline {
                             dir('_project') {
                                 env.VERSION = (
                                     sh(
-                                        script: 'poetry-dynamic-versioning && git restore .',
+                                        script: 'poetry-dynamic-versioning 2>&1 && git restore .',
                                         returnStdout: true,
                                         label: 'Get version info' 
                                     ) =~ /^(?:Version: (.+)\n)/
