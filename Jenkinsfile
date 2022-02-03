@@ -137,11 +137,13 @@ pipeline {
                     steps {
                         script {
                             dir('_project') {
-                                env.VERSION = sh(
-                                    script: 'poetry-dynamic-versioning && git restore .',
-                                    returnStdout: true,
-                                    label: 'Get version info' 
-                                ) =~ /^(?:Version: (.+)\n)/)[0][1]
+                                env.VERSION = (
+                                    sh(
+                                        script: 'poetry-dynamic-versioning && git restore .',
+                                        returnStdout: true,
+                                        label: 'Get version info' 
+                                    ) =~ /^(?:Version: (.+)\n)/
+                                )[0][1]
                                 def out = readJSON(
                                     text: sh(
                                         script: 'python ../get_version_info.py',
